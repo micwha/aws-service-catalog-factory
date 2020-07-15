@@ -107,6 +107,10 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: ServiceCatalogFactory-ValidateProject
+                EnvironmentVariables:
+                  - type: PLAINTEXT
+                    name: TEMPLATE_FORMAT
+                    value: {{ template_format }}
               RunOrder: 1
               InputArtifacts:
               - Name: Source

@@ -424,7 +424,7 @@ Resources:
           Value: "Framework"
 
 
-  ValidateProject:
+  ValidateProjectYaml:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub "ServiceCatalogFactory-ValidateProject"
@@ -435,6 +435,10 @@ Resources:
         Type: linuxContainer
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/ruby:2.3.1
+        EnvironmentVariables:
+          - type: PLAINTEXT
+            name: TEMPLATE_FORMAT
+            value: yaml
       Source:
         Type: CODEPIPELINE
         BuildSpec: |
@@ -443,8 +447,8 @@ Resources:
             build:
               commands:
                 - export FactoryTemplateValidateBucket=$(aws cloudformation list-stack-resources --stack-name servicecatalog-factory --query 'StackResourceSummaries[?LogicalResourceId==`FactoryTemplateValidateBucket`].PhysicalResourceId' --output text)
-                - aws s3 cp product.template.{{ template_format }} s3://$FactoryTemplateValidateBucket/$CODEBUILD_BUILD_ID.{{ template_format }}
-                - aws cloudformation validate-template --template-url https://$FactoryTemplateValidateBucket.s3.$AWS_REGION.amazonaws.com/$CODEBUILD_BUILD_ID.{{ template_format }}
+                - aws s3 cp product.template.${TEMPLATE_FORMAT} s3://$FactoryTemplateValidateBucket/$CODEBUILD_BUILD_ID.${TEMPLATE_FORMAT}
+                - aws cloudformation validate-template --template-url https://$FactoryTemplateValidateBucket.s3.$AWS_REGION.amazonaws.com/$CODEBUILD_BUILD_ID.${TEMPLATE_FORMAT}
           artifacts:
             files: '**/*'
       TimeoutInMinutes: 20
