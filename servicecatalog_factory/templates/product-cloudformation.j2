@@ -93,58 +93,56 @@ Resources:
               OutputArtifacts:
                 - Name: Parse
 {% endif %}
-#        - Name: Tests
-#          Actions:
-#            - Name: Validate
-#              ActionTypeId:
-#                Category: Test
-#                Owner: AWS
-#                Version: 1
-#                Provider: CodeBuild
-#              Configuration:
-#                ProjectName: ServiceCatalogFactory-SharedValidateProject
-#                EnvironmentVariables:
-#                  - type: PLAINTEXT
-#                    name: TEMPLATE_FORMAT
-#                    value: {{ template_format }}
-#              RunOrder: 1
-#              InputArtifacts:
-#              - Name: Source
-#              OutputArtifacts:
-#                - Name: TestValidate
+        - Name: Tests
+          Actions:
+            - Name: Validate
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-SharedValidateProject
+                EnvironmentVariables:
+                  - Name: TEMPLATE_FORMAT
+                    Value: {{ template_format }}
+              RunOrder: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: TestValidate
 {% if Options.ShouldCFNNag %}
-#            - Name: CFNNag
-#              ActionTypeId:
-#                Category: Test
-#                Owner: AWS
-#                Version: 1
-#                Provider: CodeBuild
-#              Configuration:
-#                ProjectName: ServiceCatalogFactory-SharedCFNNagProject
-#                EnvironmentVariables:
-#                  - type: PLAINTEXT
-#                    name: TEMPLATE_FORMAT
-#                    value: {{ template_format }}
-#              RunOrder: 1
-#              InputArtifacts:
-#                - Name: Source
-#              OutputArtifacts:
-#                - Name: TestCFNNag
+            - Name: CFNNag
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-SharedCFNNagProject
+                EnvironmentVariables:
+                  - Name: TEMPLATE_FORMAT
+                    Value: {{ template_format }}
+              RunOrder: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: TestCFNNag
 {% endif %}
 {% if Options.ShouldCloudformationRSpec %}
-#            - Name: CloudformationRSpec
-#              ActionTypeId:
-#                Category: Test
-#                Owner: AWS
-#                Version: 1
-#                Provider: CodeBuild
-#              Configuration:
-#                ProjectName: ServiceCatalogFactory-SharedCloudformationRSpec
-#              RunOrder: 1
-#              InputArtifacts:
-#                - Name: Source
-#              OutputArtifacts:
-#                - Name: TestCloudformationRSpec
+            - Name: CloudformationRSpec
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-SharedCloudformationRSpec
+              RunOrder: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: TestCloudformationRSpec
 {% endif %}
 
         - Name: Package
