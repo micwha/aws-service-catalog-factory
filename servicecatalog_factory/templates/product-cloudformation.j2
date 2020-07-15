@@ -103,9 +103,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: ServiceCatalogFactory-SharedValidateProject
-                EnvironmentVariables:
-                  - Name: TEMPLATE_FORMAT
-                    Value: {{ template_format }}
+                EnvironmentVariables: '[{"name":"TEMPLATE_FORMAT","value":"{{ template_format }}","type":"PLAINTEXT"}]'
               RunOrder: 1
               InputArtifacts:
                 - Name: Source
@@ -120,9 +118,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: ServiceCatalogFactory-SharedCFNNagProject
-                EnvironmentVariables:
-                  - Name: TEMPLATE_FORMAT
-                    Value: {{ template_format }}
+                EnvironmentVariables: '[{"name":"TEMPLATE_FORMAT","value":"{{ template_format }}","type":"PLAINTEXT"}]'
               RunOrder: 1
               InputArtifacts:
                 - Name: Source
