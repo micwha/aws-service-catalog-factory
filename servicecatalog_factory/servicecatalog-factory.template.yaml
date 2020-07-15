@@ -423,11 +423,10 @@ Resources:
         - Key: "ServiceCatalogFactory:Actor"
           Value: "Framework"
 
-
-  ValidateProjectYaml:
+  ValidateProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub "ServiceCatalogFactory-ValidateProject"
+      Name: ServiceCatalogFactory-SharedValidateProject
       ServiceRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/servicecatalog-product-factory/DeliveryCodeRole"
       Artifacts:
         Type: CODEPIPELINE
@@ -436,9 +435,9 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/ruby:2.3.1
         EnvironmentVariables:
-          - type: PLAINTEXT
-            name: TEMPLATE_FORMAT
-            value: yaml
+          - Type: PLAINTEXT
+            Name: TEMPLATE_FORMAT
+            Value: yaml
       Source:
         Type: CODEPIPELINE
         BuildSpec: |
@@ -454,7 +453,70 @@ Resources:
       TimeoutInMinutes: 20
       Tags:
         - Key: "ServiceCatalogFactory:Actor"
-          Value: "Generated"
+          Value: "Framework"
+
+  CFNNagProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: ServiceCatalogFactory-SharedCFNNagProject
+      ServiceRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/servicecatalog-product-factory/DeliveryCodeRole"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: linuxContainer
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/ruby:2.3.1
+        EnvironmentVariables:
+          - Type: PLAINTEXT
+            Name: TEMPLATE_FORMAT
+            Value: yaml
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              commands:
+                - gem install cfn-nag
+                - cfn_nag_rules # Show all cfn_nag_rules that will be used in the scan
+            build:
+              commands:
+                - cfn_nag_scan --input-path ./product.template.${TEMPLATE_FORMAT}
+          artifacts:
+            files: '**/*'
+      TimeoutInMinutes: 20
+      Tags:
+        - Key: "ServiceCatalogFactory:Actor"
+          Value: "Framework"
+
+  CloudformationRSpecProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: ServiceCatalogFactory-SharedCloudformationRSpecProject
+      ServiceRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/servicecatalog-product-factory/DeliveryCodeRole"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: linuxContainer
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/ruby:2.3.1
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              commands:
+                - gem install cloudformation_rspec
+            build:
+              commands:
+                - rspec
+          artifacts:
+            files: '**/*'
+      TimeoutInMinutes: 20
+      Tags:
+        - Key: "ServiceCatalogFactory:Actor"
+          Value: "Framework"
 
 Outputs:
   CatalogBucketUrl:

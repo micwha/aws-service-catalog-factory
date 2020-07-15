@@ -106,7 +106,7 @@ Resources:
                 Version: 1
                 Provider: CodeBuild
               Configuration:
-                ProjectName: ServiceCatalogFactory-ValidateProject
+                ProjectName: ServiceCatalogFactory-SharedValidateProject
                 EnvironmentVariables:
                   - type: PLAINTEXT
                     name: TEMPLATE_FORMAT
@@ -116,9 +116,40 @@ Resources:
               - Name: Source
               OutputArtifacts:
                 - Name: TestValidate
-{% if Options.ShouldCFNNag %}{% with action="CFNNag", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
-{% if Options.ShouldCloudformationRSpec %}{% with action="CloudformationRSpec", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
-
+{% if Options.ShouldCFNNag %}
+            - Name: CFNNag
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-SharedCFNNagProject
+                EnvironmentVariables:
+                  - type: PLAINTEXT
+                    name: TEMPLATE_FORMAT
+                    value: {{ template_format }}
+              RunOrder: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: TestCFNNag
+{% endif %}
+{% if Options.ShouldCloudformationRSpec %}
+            - Name: CloudformationRSpec
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-SharedCloudformationRSpec
+              RunOrder: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: TestCloudformationRSpec
+{% endif %}
         - Name: Package
           Actions:
             - Name: Package
