@@ -4,7 +4,6 @@ Description: |
   {"version": "{{ FACTORY_VERSION }}", "framework": "servicecatalog-factory", "role": "product-pipeline", "type": "cloudformation"}
 Resources:
 
-{% include 'tests/ValidateProject.j2' %}
 {% if Options.ShouldCFNNag %}{% include 'tests/CFNNagBuildProject.j2' %}{% endif %}
 {% if Options.ShouldCloudformationRSpec %}{% include 'tests/CloudformationRSpecProject.j2' %}{% endif %}
 
@@ -100,10 +99,25 @@ Resources:
 
         - Name: Tests
           Actions:
-{% with action="Validate", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}
+            - Name: {{ action }}
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: ServiceCatalogFactory-ValidateProject
+              RunOrder: 1
+              InputArtifacts:
+              {% if ShouldParseAsJinja2Template %}
+              - Name: Parse
+              {% else %}
+              - Name: Source
+              {% endif %}
+              OutputArtifacts:
+                - Name: Test{{ action }}
 {% if Options.ShouldCFNNag %}{% with action="CFNNag", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
 {% if Options.ShouldCloudformationRSpec %}{% with action="CloudformationRSpec", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
-
 
         - Name: Package
           Actions:
