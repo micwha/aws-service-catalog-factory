@@ -99,7 +99,7 @@ Resources:
 
         - Name: Tests
           Actions:
-            - Name: {{ action }}
+            - Name: Validate
               ActionTypeId:
                 Category: Test
                 Owner: AWS
@@ -109,13 +109,9 @@ Resources:
                 ProjectName: ServiceCatalogFactory-ValidateProject
               RunOrder: 1
               InputArtifacts:
-              {% if ShouldParseAsJinja2Template %}
-              - Name: Parse
-              {% else %}
               - Name: Source
-              {% endif %}
               OutputArtifacts:
-                - Name: Test{{ action }}
+                - Name: TestValidate
 {% if Options.ShouldCFNNag %}{% with action="CFNNag", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
 {% if Options.ShouldCloudformationRSpec %}{% with action="CloudformationRSpec", ShouldParseAsJinja2Template=Options.ShouldParseAsJinja2Template %}{% include 'test-action.j2' %}{% endwith %}{% endif %}
 
