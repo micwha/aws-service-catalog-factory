@@ -41,7 +41,7 @@ def fake_component(fake_version):
         "SupportDescription": "Contact us on Chime for help #central-it-team",
         "SupportEmail": "central-it-team@customer.com",
         "SupportUrl": "https://wiki.customer.com/central-it-team/self-service/account-iam",
-        "Tags": [{"Key": "product-type", "Value": "iam",}],
+        "Tags": [{"Key": "product-type", "Value": "iam", }],
         "Versions": [fake_version],
     }
 
@@ -52,8 +52,8 @@ def fake_portfolio(fake_component):
         "DisplayName": "central-it-team-portfolio",
         "Description": "A place for self service products ready for your account",
         "ProviderName": "central-it-team",
-        "Associations": ["arn:aws:iam::${AWS::AccountId}:role/Admin",],
-        "Tags": [{"Key": "provider"}, {"Value": "central-it-team"},],
+        "Associations": ["arn:aws:iam::${AWS::AccountId}:role/Admin", ],
+        "Tags": [{"Key": "provider"}, {"Value": "central-it-team"}, ],
         "Components": [fake_component],
     }
 
@@ -319,15 +319,16 @@ def test_bootstrap_branch(mocker, sut):
     # setup
     branch_name = "foo"
     mocked_bootstrap = mocker.patch.object(sut, "bootstrap")
+    source_provider, owner, repo, branch, poll_for_source_changes, webhook_secret = None, None, None, None, None, None
     # exercise
-    sut.bootstrap_branch(branch_name)
+    sut.bootstrap_branch(branch_name, source_provider, owner, repo, branch, poll_for_source_changes, webhook_secret)
 
     # verify
     assert (
-        sut.constants.VERSION
-        == "https://github.com/awslabs/aws-service-catalog-factory/archive/{}.zip".format(
-            branch_name
-        )
+            sut.constants.VERSION
+            == "https://github.com/awslabs/aws-service-catalog-factory/archive/{}.zip".format(
+        branch_name
+    )
     )
     mocked_bootstrap.assert_called_once()
 
