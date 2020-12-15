@@ -41,10 +41,30 @@ logger.setLevel(logging.INFO)
 
 
 def resolve_from_site_packages(what):
+    """
+    Resolves a path based to the current project directory
+
+    Args:
+        what (string): the file or directory to resolve
+
+    Returns:
+        string: The resolved path to the file or directory
+    """
+
     return os.path.sep.join([os.path.dirname(os.path.abspath(__file__)), what])
 
 
 def read_from_site_packages(what):
+    """
+    Reads the contents of a file in the project directory
+
+    Args:
+        what (string): the filename of the file to read
+
+    Returns:
+        string: The contents of the file
+    """
+
     return open(resolve_from_site_packages(what), "r").read()
 
 
@@ -53,6 +73,13 @@ ENV = Environment(loader=FileSystemLoader(TEMPLATE_DIR), extensions=["jinja2.ext
 
 
 def get_regions():
+    """
+    Gets the enabled regions for the deployment from the SSM Parameter Store
+
+    Returns:
+        list: The list of regions for the deployment
+    """
+
     with betterboto_client.ClientContextManager(
         "ssm", region_name=constants.HOME_REGION
     ) as ssm:
@@ -62,6 +89,16 @@ def get_regions():
 
 
 def merge(dict1, dict2):
+    """
+    Merges two dictionaries together
+
+    Args:
+        dict1 (dict): The first dictionary
+        dict2 (dict): The second dictionary
+
+    Returns:
+        dict: The result of merging the two dictionaries together
+    """
     result = deepcopy(dict1)
     for key, value in dict2.items():
         if isinstance(value, collections.Mapping):
@@ -70,7 +107,7 @@ def merge(dict1, dict2):
             result[key] = deepcopy(dict2[key])
     return result
 
-
+#TODO: comment this method
 def validate(p):
     for portfolio_file_name in os.listdir(p):
         portfolios_file_path = os.path.sep.join([p, portfolio_file_name])
@@ -85,6 +122,18 @@ def validate(p):
 
 
 def generate_portfolios(portfolios_file_path):
+    """
+    Gets a list of portfolio definitions from a portfolio YAML file
+    If the definition contains external definitions, the external definitions 
+    are processed to create the complete portfolio definition
+
+    Args:
+        portfolios_file_path (string): The path to the portfolio YAML file 
+
+    Returns:
+        dict: List of portfolios
+    """
+    
     logger.info("Loading portfolio: {}".format(portfolios_file_path))
     with open(portfolios_file_path) as portfolios_file:
         portfolio_file_name = portfolios_file_path.split("/")[-1]
@@ -103,6 +152,16 @@ def generate_portfolios(portfolios_file_path):
 
 
 def check_for_external_definitions_for(portfolio, portfolio_file_name, type):
+    """
+    Checks if there are external definitions in a portfolio for a given type
+    If there are, the external definitions are appended to the portfolio Versions
+
+    Args:
+        portfolio (dict): An object containing a portfolio definition
+        portfolio_file_name (string): The file name for the portfolio definition file
+        type (string): The type of objects to check for external definitions
+    """
+
     for component in portfolio.get(type, []):
         portfolio_external_components_specification_path = os.path.sep.join(
             [
