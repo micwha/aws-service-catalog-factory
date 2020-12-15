@@ -107,7 +107,8 @@ def merge(dict1, dict2):
             result[key] = deepcopy(dict2[key])
     return result
 
-#TODO: comment this method
+
+# TODO: comment this method
 def validate(p):
     for portfolio_file_name in os.listdir(p):
         portfolios_file_path = os.path.sep.join([p, portfolio_file_name])
@@ -133,7 +134,7 @@ def generate_portfolios(portfolios_file_path):
     Returns:
         dict: List of portfolios
     """
-    
+
     logger.info("Loading portfolio: {}".format(portfolios_file_path))
     with open(portfolios_file_path) as portfolios_file:
         portfolio_file_name = portfolios_file_path.split("/")[-1]
